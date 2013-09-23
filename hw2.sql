@@ -86,12 +86,4 @@ SELECT *
 			OR    city = 'Kyoto'
 			);
 
---8
-SELECT cid
-	FROM customers
-	WHERE cid NOT in (
-		SELECT cid
-			FROM orders
-			WHERE aid = 'a03'
-			);
 			
