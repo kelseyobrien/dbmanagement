@@ -113,3 +113,23 @@ select c.name, p.name, a.name
 	having a.city = 'New York'
 
 --16
+create view "Calculations"
+as 
+select o.cid, o.pid, ((o.qty * p.priceUSD) - ((o.qty * p.priceUSD) * (c.discount * .01))) as "Calculated Total"
+				from orders o left join products p on o.pid = p.pid
+					left join customers c on o.cid = c.cid
+
+select * from "Calculations"
+
+select o.ordno as "Order Number", o.pid as "Product ID", o.dollars "Given Total", "Calculated Total"
+	from orders o, "Calculations" c
+	where o.cid = c.cid
+	and o.pid = c.pid
+	and o.dollars = "Calculated Total"
+
+--17
+
+--Orders for customer w/ cid = 'c004' should no longer show
+update orders
+set dollars = 500.00
+where cid = 'c004'
