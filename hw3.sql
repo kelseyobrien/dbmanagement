@@ -71,6 +71,10 @@ select c.name, c.city, count(p.name)
 						group by c.city, c.name) sub1)				
 
 --10
+
+
+
+--11
 select c.name, c.city, count(p.name)
 	from customers c inner join products p on c.city = p.city
 	group by c.city, c.name
@@ -79,7 +83,6 @@ select c.name, c.city, count(p.name)
 						from products
 						group by city) sub1)
 
---11**
 
 --12
 select name as "Product Name"
@@ -93,13 +96,20 @@ select c.name, o.pid, o.dollars
 	where o.cid = c.cid
 	order by dollars desc;
 
---14 total ordered?
-select c.name, c.cid, sum(dollars) -- or just o.dollars
+--14
+select c.name, sum(dollars)
 	from orders o inner join customers c on o.cid = c.cid
-	group by c.name, c.cid--, o.dollars
-	order by c.name
+	group by c.name, c.cid
+	order by c.name,
+	coalesce(c.name)
+
 
 --15
-select *
-	from orders o
-	
+select c.name, p.name, a.name
+	from orders o inner join agents a on o.aid = a.aid
+		inner join customers c on o.cid = c.cid
+		inner join products p on o.pid = p.pid
+	group by o.ordno, a.aid, c.cid, p.pid
+	having a.city = 'New York'
+
+--16
