@@ -62,7 +62,7 @@ select c.name as "Customer Name", a.name as "Agent Name", c.city as "City Name"
 	where c.city = a.city;
 
 --9	
-select c.name, c.city, count(p.name)
+select c.name, c.city
 	from customers c inner join products p on c.city = p.city
 	group by c.city, c.name
 	having count(p.name) = (select min("countProducts") 
@@ -71,11 +71,21 @@ select c.name, c.city, count(p.name)
 						group by c.city, c.name) sub1)				
 
 --10
-
+select c.name, c.city
+	from customers c inner join products p on c.city = p.city
+	group by c.city, c.name
+	having c.city = (select city
+			from products
+			group by city
+			having count(name) = (select max("countProducts")
+						from (select count(name) as "countProducts", city
+						from products
+						group by city) sub1)
+			limit 1)
 
 
 --11
-select c.name, c.city, count(p.name)
+select c.name, c.city
 	from customers c inner join products p on c.city = p.city
 	group by c.city, c.name
 	having count(p.name) = (select max("countProducts")
@@ -119,8 +129,6 @@ select o.cid, o.pid, ((o.qty * p.priceUSD) - ((o.qty * p.priceUSD) * (c.discount
 				from orders o left join products p on o.pid = p.pid
 					left join customers c on o.cid = c.cid
 
-select * from "Calculations"
-
 select o.ordno as "Order Number", o.pid as "Product ID", o.dollars "Given Total", "Calculated Total"
 	from orders o, "Calculations" c
 	where o.cid = c.cid
@@ -130,6 +138,13 @@ select o.ordno as "Order Number", o.pid as "Product ID", o.dollars "Given Total"
 --17
 
 --Orders for customer w/ cid = 'c004' should no longer show
+--1021 feb c004 a06 p01 1000 460.00
 update orders
 set dollars = 500.00
 where cid = 'c004'
+
+select o.ordno as "Order Number", o.pid as "Product ID", o.dollars "Given Total", "Calculated Total"
+	from orders o, "Calculations" c
+	where o.cid = c.cid
+	and o.pid = c.pid
+	and o.dollars = "Calculated Total"
